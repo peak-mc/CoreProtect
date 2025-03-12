@@ -19,10 +19,18 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@v1
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build
         run: mvn -B verify
+      - name: Create GitHub Release with JAR
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./target/CoreProtect-*.jar
+          tag_name: commit-${{ github.sha }}
+          name: ${{ github.sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
